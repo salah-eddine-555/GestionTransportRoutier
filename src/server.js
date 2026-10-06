@@ -10,9 +10,10 @@ const app = express();
 app.use(express.json());
 
 
-app.use(errorMiddleware);
 
 app.use("/api", router);
+
+app.use(errorMiddleware);
 
 
 
