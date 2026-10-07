@@ -5,6 +5,8 @@ import {registerSchema} from '../validations/auth.validation.js';
 import camionRoutes from "./camion.routes.js";
 import RemorqueRoutes from "./remorque.routes.js";
 import TrajetRoutes from './trajet.routes.js';
+import PneuRoutes from './pneu.routes.js';
+import PneuAffectationRoutes from './pneuAffectation.routes.js';
 
 import { verifyToken, isAdmin } from "../middlewares/auth.middleware.js";
 
@@ -21,6 +23,13 @@ router.use("/", verifyToken, isAdmin, camionRoutes);
 router.use("/remorques", verifyToken, isAdmin, RemorqueRoutes);
 
 router.use("/trajets", verifyToken, isAdmin, TrajetRoutes);
+
+
+router.use("/pneus", verifyToken, isAdmin, PneuRoutes);
+
+router.use("/pneu-affectations", verifyToken, isAdmin, PneuAffectationRoutes)
+
+
 
 
 
