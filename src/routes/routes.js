@@ -7,8 +7,9 @@ import RemorqueRoutes from "./remorque.routes.js";
 import TrajetRoutes from './trajet.routes.js';
 import PneuRoutes from './pneu.routes.js';
 import PneuAffectationRoutes from './pneuAffectation.routes.js';
+import chauffeurRoutes from './chauffeur.routes.js';
 
-import { verifyToken, isAdmin } from "../middlewares/auth.middleware.js";
+import { verifyToken, isAdmin, isChauffeur } from "../middlewares/auth.middleware.js";
 
 
 
@@ -19,11 +20,12 @@ router.post("/login", authController.login);
 router.post("/logout", verifyToken, authController.logout);
 
 
-router.use("/", verifyToken, isAdmin, camionRoutes);
+router.use("/mes-trajets", verifyToken, isChauffeur, chauffeurRoutes);
+
+router.use("/", verifyToken, (req, res) => console.log("hdgsdlkjqshjdh") , isAdmin, camionRoutes);
+
 router.use("/remorques", verifyToken, isAdmin, RemorqueRoutes);
-
 router.use("/trajets", verifyToken, isAdmin, TrajetRoutes);
-
 
 router.use("/pneus", verifyToken, isAdmin, PneuRoutes);
 

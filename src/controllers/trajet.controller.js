@@ -47,4 +47,16 @@ export const update = async(req, res, next) => {
 }
 
 
+export const getTrajetsParChauffeur = async(req, res, next) => {
+    console.log("cheffeur ssss");
+    try{
+        console.log(req.user); return ;
+
+    }catch(err){
+        console.log("teste error");
+        next(err);
+    }
+}
+
+
 
