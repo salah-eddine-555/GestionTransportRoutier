@@ -2,6 +2,7 @@ import * as service from '../services/trajet.service.js';
 
 
 export const getAll = async(req, res, next) => {
+    console.log("trajet");
     try{
         const trajets = await service.getAllTrajets();
         
@@ -48,15 +49,47 @@ export const update = async(req, res, next) => {
 
 
 export const getTrajetsParChauffeur = async(req, res, next) => {
-    console.log("cheffeur ssss");
+    // console.log("cheffeur ssss");
     try{
-        console.log(req.user); return ;
+        // console.log(req.user.userId);
+        const trajets  = await service.getTrajetsParChauffeur(req.user.userId);
+
+        if(trajets.length === 0 ){
+            return res.status(200).json({
+                succes: true,
+                'message': "acune trajet assigne pour vous jusqu'a maintenant",
+                data: []
+            });
+        }
+
+        return res.status(200).json({
+            succes: true,
+            message: "votre trajets est recuperers",
+            data: trajets
+        });
 
     }catch(err){
         console.log("teste error");
         next(err);
     }
 }
+
+export const lancerDepartTrajet = async(req, res, next) =>{
+    try{
+       
+        const depart = await service.lancerDepart(req.params.id, req.user.userId, req.body);
+
+        return res.status(200).json({
+            succes: true,
+            message: "Le départ du trajet a été enregistré avec succès",
+            data: depart
+        })
+    }catch(err){
+        next(err);
+    }
+}
+
+
 
 
 

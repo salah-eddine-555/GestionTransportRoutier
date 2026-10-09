@@ -120,3 +120,57 @@ export const deleteTrajet = async (id) => {
         message: "Trajet supprimé avec succès"
     };
 };
+
+export const getTrajetsParChauffeur = async(chauffeurId) => {
+
+    return  await Trajet.find({chauffeur: chauffeurId});
+}
+
+export const lancerDepart = async(id,chauffeurId, data) => {
+
+    console.log(chauffeurId);
+    const trajet = await Trajet.findById(id);
+    
+
+    if(!trajet){throw new Error("ce trajet est introuvable")};
+
+    if(trajet.chauffeur !== chauffeurId){
+        throw new Error("vous n'etes pas le droit de demarer ce trajet");
+    }
+
+    if(trajet.statut !== 'à faire'){
+        throw new Error("ce trajet est deja en cour ou teminee");
+    }
+
+    trajet.kiloDepart = data.kiloDepart;
+    trajet.statut = 'en cours';
+    await trajet.save();
+    return trajet;
+}
+
+export const TermineTrajet = async(id,chauffeurId, data) => {
+
+    const trajet = await Trajet.findById(id);
+
+    if(!trajet){throw new Error("ce trajet est introuvable")};
+
+      if(!trajet.chauffeur || trajet.chauffeur !== chauffeurId){
+        throw new Error("vous n'etes pas le droit de termine ce trajet");
+    }
+
+    if(trajet.statut !== 'en cours'){
+        throw new Error("ce trajet est pas encore demaerer ou deja terminee");
+    }
+
+    if(trajet.kiloDepart >= data.kiloArrivee){
+        throw new Error("kilometrage d'arrivee doit superieur a kilometrage de depart");
+    }
+
+    trajet.kiloArrivee = data.kiloArrivee
+    trajet.status = 'terminé'
+    await trajet.save();
+
+    return trajet;
+
+}
+

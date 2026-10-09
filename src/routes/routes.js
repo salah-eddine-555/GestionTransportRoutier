@@ -22,7 +22,7 @@ router.post("/logout", verifyToken, authController.logout);
 
 router.use("/mes-trajets", verifyToken, isChauffeur, chauffeurRoutes);
 
-router.use("/", verifyToken, (req, res) => console.log("hdgsdlkjqshjdh") , isAdmin, camionRoutes);
+router.use("/camions", verifyToken, (req, res) => console.log("hdgsdlkjqshjdh") , isAdmin, camionRoutes);
 
 router.use("/remorques", verifyToken, isAdmin, RemorqueRoutes);
 router.use("/trajets", verifyToken, isAdmin, TrajetRoutes);
