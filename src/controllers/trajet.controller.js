@@ -90,6 +90,23 @@ export const lancerDepartTrajet = async(req, res, next) =>{
 }
 
 
+export const FinTrajet = async(req, res, next) => {
+    try{
+        const trajet = await service.TermineTrajet(req.params.id, req.user.userId, req.body);
+
+        return res.status(200).json({
+            succes: true,
+            message: 'le trajet est terminee avec succes',
+            data: trajet
+        })
+
+    }catch(err){
+        next(err)
+    }
+}
+
+
+
 
 
 

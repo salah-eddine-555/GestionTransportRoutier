@@ -5,6 +5,7 @@ import {createTrajetSchema, updateTrajetSchema} from '../validations/trajet.vali
 import validate from '../middlewares/validation.middleware.js';
 
 const router = express.Router();
+
 router.get("/", controller.getAll);
 router.post("/",validate(createTrajetSchema), controller.create);
 router.put("/:id", validate(updateTrajetSchema), controller.update);

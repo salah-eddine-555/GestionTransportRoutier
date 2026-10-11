@@ -55,8 +55,15 @@ const trajetSchema = new mongoose.Schema(
             type: String,
             trim: true
         },
+        distanceParcourue: {
+            type: Number,
+            min: 0
+        },
 
-      
+        consommationMoyenne: {
+            type: Number,
+            min: 0
+        },
         chauffeur: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User"

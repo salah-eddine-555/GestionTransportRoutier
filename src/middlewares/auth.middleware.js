@@ -35,13 +35,13 @@ export const isAdmin = (req, res, next) => {
     // console.log("qsgdhqsgdjksqhgdksqh")
     try {
         const { role } = req.user;
-
+       
         if (role === 'admin') {
             next();
         } else {
             return res.status(403).json({
                 sucess: false,
-                message: 'not authorized userjgfgfjgfjfg'
+                message: 'not authorized '
             });
         }
     } catch (err) {
