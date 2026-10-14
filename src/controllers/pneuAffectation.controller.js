@@ -4,11 +4,16 @@ export const createAffectation = async (req, res, next) => {
     try {
         const { pneuId, camionId } = req.params;
 
+        // console.log(pneuId);
+        // console.log(camionId);
+        // console.log(req.body);
+
         const affectation = await affecterPneu(
             pneuId,
             camionId,
             req.body
         );
+        // console.log(affectation);
 
         res.status(201).json({
             message: "Pneu affecté au camion avec succès",

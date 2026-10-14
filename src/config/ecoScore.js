@@ -1,0 +1,2 @@
+
+export const CONSOMMATION_REFERENCE = 30;
