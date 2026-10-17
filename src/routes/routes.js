@@ -12,13 +12,15 @@ import reglesRoutes from './reglesMaintenances.routes.js';
 import mainteancesRoutes from './maintenance.routes.js';
 
 import { verifyToken, isAdmin, isChauffeur } from "../middlewares/auth.middleware.js";
+import {authLimiter} from '../middlewares/rateLimiter.middleware.js';
 
 
 
 const router = express.Router();
 
 router.post("/register",validate(registerSchema), authController.register);
-router.post("/login", authController.login);
+
+router.post("/login", authLimiter, authController.login);
 router.post("/logout", verifyToken, authController.logout);
 
 
