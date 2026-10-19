@@ -1,6 +1,7 @@
 import Trajet from '../models/Trajet.js';
-import PneuAffectation from '../models/PneuAffectation.js';
+// import PneuAffectation from '../models/PneuAffectation.js';
 import Pneu from '../models/Pneu.js';
+import Camion from '../models/Camion.js';
 import { CONSOMMATION_REFERENCE } from '../config/ecoScore.js';
 
 
@@ -179,3 +180,138 @@ export const getInformationsPneus = async () => {
 }
 
 
+export const getTrends = async () => {
+
+    console.log("test");
+    const trends = await Camion.aggregate([
+        {
+            $lookup: {
+                from: 'trajets',
+                localField: '_id',
+                foreignField: 'camion',
+                as: 'trajets'
+            }
+        },
+        {
+            $lookup: {
+                from: 'maintenances',
+                localField: '_id',
+                foreignField: 'camion',
+                as: 'maintenances',
+            }
+        },
+        {
+            $addFields: {
+                trajets: {
+                    $map: {
+                        input: '$trajets',
+                        as: 'trajet',
+                        in: {
+                            $mergeObjects: [
+                                "$$trajet",
+                                {
+                                    Tmission: {
+                                        $dateDiff: {
+                                            startDate: "$$trajet.dateDepartPrevu",
+                                            endDate: "$$trajet.dateArriveePrevue",
+                                            unit: "hour"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        {
+            $addFields: {
+                maintenances: {
+                    $map: {
+                        input: "$maintenances",
+                        as: "m",
+                        in: {
+                            $mergeObjects: [
+                                "$$m",
+                                {
+                                    Tmaintenance: {
+                                        $dateDiff: {
+                                            startDate: "$$m.dateDebut",
+                                            endDate: "$$m.dateFin",
+                                            unit: "hour"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        {
+            $addFields: {
+                totalMissionParHeur: {
+                    $sum: "$trajets.Tmission"
+                }
+            }
+        },
+        {
+            $addFields: {
+                totalMaintenanceParHeur: {
+                    $sum: "$maintenances.Tmaintenance"
+                }
+            }
+        },
+        {
+            $addFields: {
+                Ttotal: 168,
+                Tdisponible: {
+                    $subtract: [
+                        {
+                            $subtract: [168, "$totalMissionParHeur"]
+                        }, "$totalMaintenanceParHeur"
+                    ]
+                }
+            }
+        },
+        {
+            $group: {
+                _id: null,
+                nombreCamions: { $sum: 1 },
+                TotalMissionFloote: { $sum: "$totalMissionParHeur" },
+                TotalMaintenanceFloote: { $sum: "$totalMaintenanceParHeur" },
+                TotalDisponibleFloote: { $sum: "$Tdisponible" }
+            }
+        },
+        {
+            $addFields: {
+                TutilisationFlotte: {
+                    $round: [
+                        {
+                            $multiply: [
+                                {
+                                    $divide: ['$TotalMissionFloote',
+                                        { $sum: { $add: ["$TotalDisponibleFloote", "$TotalMaintenanceFloote"] } }
+                                    ]
+                                }, 100]
+                        }
+                        , 2]
+                }
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                nombreCamions: 1,
+                TotalMissionFloote: 1,
+                TotalMaintenanceFloote: 1,
+                TotalDisponibleFloote: 1,
+                TutilisationFlotte: 1
+            }
+
+        }
+
+    ])
+
+    console.log(trends);
+}

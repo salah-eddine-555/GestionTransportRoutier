@@ -1,5 +1,5 @@
 import express from 'express';
-import {getStatistiques, analyticFinancial, getInformationsPneu} from '../../controllers/statistiques.controller.js';
+import {getStatistiques, analyticFinancial, getInformationsPneu, getUtilisationTrends} from '../../controllers/statistiques.controller.js';
 import {analyticsLimiter} from  '../../middlewares/rateLimiter.middleware.js';
 
 
@@ -20,5 +20,6 @@ router.get("/analytics/drivers/eco-performance", getStatistiques);
 router.get("/analytics/trips/financial-esg", analyticFinancial);
 
 router.get("/analytics/tires/health-matrix", getInformationsPneu);
+router.get("/analytics/fleet/utilization-trends", getUtilisationTrends)
 
 export default router;

@@ -1,4 +1,4 @@
-import {getStatistquesParChauffeur, getInformationsPneus, getAnalyticFinancial} from '../services/statistiques.service.js'
+import {getStatistquesParChauffeur, getInformationsPneus, getAnalyticFinancial,  getTrends} from '../services/statistiques.service.js'
 
 
 export const getStatistiques = async(req, res, next) => {
@@ -17,11 +17,8 @@ export const getStatistiques = async(req, res, next) => {
     }
 } 
 
-
 export const getInformationsPneu = async(req, res, next) => {
-
     try{
-
         const informations = await getInformationsPneus();
         
         return res.status(200).json({
@@ -51,5 +48,14 @@ export const analyticFinancial = async(req, res, next) => {
         })
     }catch(err){
         console.log(err);
+    }
+}
+
+
+export const getUtilisationTrends = async(req, res, next) => {
+    try{
+        const trends = await getTrends()
+    }catch(err){
+        next(err);
     }
 }
