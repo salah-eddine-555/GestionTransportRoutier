@@ -1,4 +1,4 @@
-import {jest , describe, it, expect, beforeEach} from '@jest/globals';
+import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 
 
 
@@ -12,7 +12,7 @@ jest.unstable_mockModule("../services/pneu.service.js", () => ({
 
 const pneuService = await import("../services/pneu.service.js");
 
-const { getAllPneus, getPneuById }  = await import("../controllers/pneu.controller.js");
+const { getAllPneus, getPneuById, createPneu, updatePneu, deletePneu } = await import("../controllers/pneu.controller.js");
 
 describe("Pneu controller getAll", () => {
     let req;
@@ -32,8 +32,8 @@ describe("Pneu controller getAll", () => {
 
     it("doit retouner la liste de pneus avec status 200", async () => {
         const pneus = [
-            {numeroSerie: "PNEU001"},
-            {numeroSerie: "MGUY009"}
+            { numeroSerie: "PNEU001" },
+            { numeroSerie: "MGUY009" }
         ]
         pneuService.getAllPneus.mockResolvedValue(pneus);
 
@@ -56,17 +56,17 @@ describe("pneu controller getPneuById", () => {
     let next;
 
     beforeEach(() => {
-            jest.clearAllMocks();
+        jest.clearAllMocks();
 
-            req = { params: {id: '123'}}
+        req = { params: { id: '123' } }
 
-            res = {
-                status: jest.fn().mockReturnThis(),
-                json: jest.fn()
-            };
-            next = jest.fn();
+        res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn()
+        };
+        next = jest.fn();
     });
-    it("doit retouner un pneu avec status 200", async() => {
+    it("doit retouner un pneu avec status 200", async () => {
         const pneu = {
             _id: "123",
             numeroSerie: "RNU8765"
@@ -75,7 +75,7 @@ describe("pneu controller getPneuById", () => {
         await getPneuById(req, res, next);
 
         expect(pneuService.getPneuById).toHaveBeenCalledWith("123"),
-        expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.status).toHaveBeenCalledWith(200);
         expect(res.json).toHaveBeenCalledWith({
             success: true,
             data: pneu
@@ -84,7 +84,7 @@ describe("pneu controller getPneuById", () => {
         expect(next).not.toHaveBeenCalled();
     });
 
-    it("doit transmettre l'erreur  a next ", async() => {
+    it("doit transmettre l'erreur  a next ", async () => {
         const error = new Error("Erreur serveur");
 
         pneuService.getPneuById.mockRejectedValue(error);
@@ -95,4 +95,165 @@ describe("pneu controller getPneuById", () => {
     })
 
 
+})
+
+describe("Create pneu controller CreatePneu", () => {
+    let req; let res; let next;
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+
+        req = {
+            body: {
+                numeroSerie: "PNU1234",
+                kilometrageUsure: 0,
+                seuilUsure: 5000
+            }
+        }
+
+        res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn()
+        }
+        next = jest.fn();
+    });
+
+    it("doit retouner le pneu a cree en cas succes", async () => {
+
+        pneuService.createPneu.mockResolvedValue(req.body);
+
+        await createPneu(req, res, next);
+
+        expect(pneuService.createPneu).toHaveBeenCalledTimes(1);
+        expect(res.status).toHaveBeenCalledWith(201);
+        expect(res.json).toHaveBeenCalledWith({
+            success: true,
+            message: "Pneu créé avec succès",
+            data: req.body
+        })
+        expect(next).not.toHaveBeenCalled();
+
+    });
+    it("le controller create Penu doit retouner une message que le pneu deja existe ", async () => {
+
+        const err = new Error("Un pneu avec ce numéro de série existe déjà");
+
+        pneuService.createPneu.mockRejectedValue(err);
+
+        await createPneu(req, res, next);
+
+        expect(pneuService.createPneu).toHaveBeenCalledTimes(1);
+        expect(next).toHaveBeenCalledWith(err);
+        expect(res.status).not.toHaveBeenCalled();
+        expect(res.json).not.toHaveBeenCalled();
+    })
+})
+
+describe("update pneu controller updatePneu", () => {
+    let req; let res; let next;
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+
+        req = {
+            params: { id: '12' },
+            body: {
+                numeroSerie: "PNU333",
+                kilometrageUsure: 12,
+                seuilUsure: 5400
+            }
+        }
+        res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn()
+        };
+        next = jest.fn();
+    });
+
+    it("updating d'un penu en cas de reussie", async () => {
+
+        pneuService.updatePneu.mockResolvedValue(req.body);
+
+        await updatePneu(req, res, next);
+
+        expect(pneuService.updatePneu).toHaveBeenCalledTimes(1);
+
+        expect(res.json).toHaveBeenCalledWith({
+            success: true,
+            message: 'Pneu modifié avec succès',
+            data: req.body
+        })
+        expect(next).not.toHaveBeenCalled();
+    });
+
+    it("updating echoue pneu introuvable ", async () => {
+
+        const err = new Error("Pneu introuvable")
+        pneuService.updatePneu.mockRejectedValue(err);
+
+        await updatePneu(req, res, next);
+
+        expect(pneuService.updatePneu).toHaveBeenCalledTimes(1);
+        expect(res.status).not.toHaveBeenCalled();
+        expect(res.json).not.toHaveBeenCalled();
+        expect(next).toHaveBeenCalledWith(err);
+
+    })
+
+    it("updating echouee numPneuEntere deja existe ", async () => {
+        const err = new Error("Un pneu avec ce numéro de série existe déjà");
+        pneuService.updatePneu.mockRejectedValue(err);
+
+        await updatePneu(req, res, next);
+
+        expect(pneuService.updatePneu).toHaveBeenCalledTimes(1);
+        expect(res.status).not.toHaveBeenCalled();
+        expect(res.json).not.toHaveBeenCalled();
+        expect(next).toHaveBeenCalledWith(err);
+    })
+})
+
+describe("delete pneu controller deletePneu", () => {
+
+    let req; let res; let next;
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+
+        req = { params: { id: '2' } }
+
+        res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn()
+        };
+        next = jest.fn()
+    })
+
+    it("delete pneu en cas de reussie ", async () => {
+
+        let message = "Pneu supprimé avec succès";
+
+        pneuService.deletePneu.mockResolvedValue(message);
+
+        await deletePneu(req, res, next);
+
+        expect(pneuService.deletePneu).toHaveBeenCalledTimes(1);
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith({
+            success: true,
+            ...message
+        })
+    })
+    it("delete penu echouee pneu introuvable ", async() => {
+        
+        let err = new Error("Pneu introuvable");
+        pneuService.deletePneu.mockRejectedValue(err);
+
+        await deletePneu(req, res, next);
+
+        expect(pneuService.deletePneu).toHaveBeenCalledTimes(1);
+        expect(res.json).not.toHaveBeenCalled();
+        expect(res.status).not.toHaveBeenCalled();
+        expect(next).toHaveBeenCalledWith(err);
+    })
 })
