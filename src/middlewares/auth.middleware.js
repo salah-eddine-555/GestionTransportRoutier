@@ -4,15 +4,8 @@ import jwt from 'jsonwebtoken';
 export const verifyToken = (req, res, next) => {
 
     try {
-        let token = req.headers.authorization;
-        if (token === undefined) {
-            return res.status(401).json({
-                error: 'Acces refuse Token manquant'
-            })
-        }
-        token = token.split(' ')[1];
+        const token = req.cookies?.accessToken;
        
-
         if (!token) {
             return res.json("token not found");
         }

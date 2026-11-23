@@ -1,0 +1,39 @@
+
+.sideBar {
+    width: 260px;
+    min-height: 100vh;
+    background-color: #212529;
+}
+
+/* Navigation links */
+.sideBar .nav-link {
+    border: none;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    background: transparent;
+}
+
+/* Hover effect */
+.sideBar .nav-link:hover {
+    background-color: #343a40;
+    color: #fff !important;
+}
+
+/* Admin information */
+.sideBar h6 {
+    font-size: 14px;
+}
+
+/* Logout button */
+.sideBar .btn-outline-danger {
+    padding: 10px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.sideBar .btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: white;
+}

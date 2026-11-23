@@ -14,7 +14,7 @@ const createRedisStore = (prefix) => {
 
 export const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
-    limit: 10,
+    limit: 20,
     standardHeaders: true,
     legacyHeaders: false, // empeche les anncinne headers
     store: createRedisStore("rl:auth:"),

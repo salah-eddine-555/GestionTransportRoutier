@@ -21,11 +21,10 @@ export const registerSchema = joi.object({
         "string.empty": "email est oblegee",
     }),
     password: joi.string().min(6).required(),
-    role: joi.string().trim().valid("admin", "chauffeur").required()
+    role: joi.string().trim().valid("admin", "chauffeur")
      .messages({
             "string.empty": "Le rôle est obligatoire",
             "any.only": "Le rôle doit être admin ou chauffeur",
-            "any.required": "Le rôle est obligatoire"
         }),
     status: joi.string().valid("active", "inactive").default("active").messages({
             "any.only": "Le statut doit être active ou inactive"
